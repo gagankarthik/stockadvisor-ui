@@ -1,21 +1,24 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import useSWR from "swr";
-import { PageHeader, Panel, PanelHeader, Stat, Badge, Segmented, Skeleton, ErrorState } from "@/components/ui";
-import { PriceChart } from "@/components/charts";
+import { PageHeader, Panel, PanelHeader, Stat, Badge, Skeleton, ErrorState } from "@/components/ui";
+import { TradingChart } from "@/components/charts";
 import { dirClass, fmtMoney, fmtNum, fmtPct, fmtSignedPct, signalTone } from "@/lib/format";
 import { clsx } from "@/lib/clsx";
 import type { StockDetail } from "@/lib/types";
 
-const PERIODS = [
-  { value: "1mo", label: "1M" },
-  { value: "3mo", label: "3M" },
-  { value: "6mo", label: "6M" },
-  { value: "1y", label: "1Y" },
-  { value: "5y", label: "5Y" },
-];
+// Time ranges → (yfinance period, interval, intraday?). 1D/5D are intraday.
+const RANGES = [
+  { label: "1D", period: "1d", interval: "5m", intraday: true },
+  { label: "5D", period: "5d", interval: "15m", intraday: true },
+  { label: "1M", period: "1mo", interval: "1d", intraday: false },
+  { label: "3M", period: "3mo", interval: "1d", intraday: false },
+  { label: "6M", period: "6mo", interval: "1d", intraday: false },
+  { label: "1Y", period: "1y", interval: "1d", intraday: false },
+  { label: "5Y", period: "5y", interval: "1wk", intraday: false },
+] as const;
 
 function validationTone(status: string) {
   if (status === "VERIFIED") return { fg: "text-up", bg: "bg-up/10", bd: "border-up/40" };
@@ -27,15 +30,31 @@ function validationTone(status: string) {
 export default function StockDetailPage() {
   const params = useParams<{ ticker: string }>();
   const ticker = (params.ticker || "").toUpperCase();
-  const [period, setPeriod] = useState("1y");
+  const [rangeIdx, setRangeIdx] = useState(5); // default 1Y
+  const [chartType, setChartType] = useState<"candles" | "area">("candles");
+  const range = RANGES[rangeIdx];
 
   const { data, error, isLoading, mutate } = useSWR<StockDetail>(
-    ticker ? `/stocks/${ticker}?period=${period}&interval=1d` : null,
+    ticker ? `/stocks/${ticker}?period=${range.period}&interval=${range.interval}` : null,
+    { refreshInterval: 60000 }, // live: refresh quote + chart each minute
   );
 
   const snap = data?.snapshot;
   const quote = data?.quote;
   const name = (data?.profile?.name as string) || snap?.name || ticker;
+
+  // change/high/low over the visible range (from the chart series)
+  const rangeStats = useMemo(() => {
+    const h = data?.history ?? [];
+    if (h.length < 2) return null;
+    const first = h[0].close;
+    const last = h[h.length - 1].close;
+    return {
+      changePct: ((last - first) / first) * 100,
+      high: Math.max(...h.map((b) => b.high)),
+      low: Math.min(...h.map((b) => b.low)),
+    };
+  }, [data]);
 
   return (
     <>
@@ -67,14 +86,58 @@ export default function StockDetailPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {/* Chart */}
+          {/* Chart — the hero */}
           <Panel>
-            <PanelHeader
-              eyebrow="Price history"
-              title={`${ticker} — adjusted close`}
-              right={<Segmented size="sm" value={period} onChange={setPeriod} options={PERIODS} />}
-            />
-            <PriceChart bars={data.history} />
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
+              <div className="flex items-baseline gap-3">
+                <div>
+                  <div className="eyebrow flex items-center gap-1.5">
+                    Price · {range.label}
+                    <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-up align-middle" title="live — refreshes each minute" />
+                  </div>
+                  {rangeStats && (
+                    <div className={clsx("font-mono text-sm tnum", dirClass(rangeStats.changePct))}>
+                      {fmtSignedPct(rangeStats.changePct)} <span className="text-faint">this {range.label}</span>
+                    </div>
+                  )}
+                </div>
+                {rangeStats && (
+                  <div className="hidden gap-4 sm:flex">
+                    <RangeStat label="High" value={fmtMoney(rangeStats.high)} />
+                    <RangeStat label="Low" value={fmtMoney(rangeStats.low)} />
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                {/* candles / area toggle */}
+                <div className="flex gap-1 rounded-[var(--radius-panel)] border border-line bg-ink p-0.5">
+                  {(["candles", "area"] as const).map((t) => (
+                    <button key={t} onClick={() => setChartType(t)} aria-pressed={chartType === t}
+                      className={clsx("rounded-[3px] px-2 py-1 font-mono text-xs capitalize transition-colors",
+                        chartType === t ? "bg-slate-2 text-brass shadow-[inset_0_0_0_1px_var(--color-line-2)]" : "text-mute hover:text-chalk")}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+                {/* range pills (scrollable on mobile) */}
+                <div className="flex gap-1 overflow-x-auto rounded-[var(--radius-panel)] border border-line bg-ink p-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  {RANGES.map((r, i) => (
+                    <button
+                      key={r.label}
+                      onClick={() => setRangeIdx(i)}
+                      aria-pressed={i === rangeIdx}
+                      className={clsx(
+                        "shrink-0 rounded-[3px] px-2.5 py-1 font-mono text-xs transition-colors",
+                        i === rangeIdx ? "bg-slate-2 text-brass shadow-[inset_0_0_0_1px_var(--color-line-2)]" : "text-mute hover:text-chalk",
+                      )}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <TradingChart bars={data.history} type={chartType} intraday={range.intraday} priceHeight={300} />
           </Panel>
 
           {/* Validation */}
@@ -105,17 +168,17 @@ export default function StockDetailPage() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             {snap && (
               <Panel className="lg:col-span-2">
-                <PanelHeader eyebrow="The desk's read" title="Score, model & signal" />
+                <PanelHeader eyebrow="Our read" title="Rating, AI odds & signal" />
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  <Stat label="Score" accent="brass" value={fmtNum(snap.score, 0)} sub={snap.lean ?? ""} />
-                  <Stat label="ML probability" accent="ion" value={snap.ml_pct == null ? "—" : fmtPct(snap.ml_pct, 0)} sub="beats median" />
-                  <Stat label="Confidence" value={fmtNum(snap.confidence_pct, 0)} sub="engines agree" />
-                  <Stat label="Signal" value={<SignalText signal={snap.signal} />} sub="technical" />
+                  <Stat label="Rating" accent="brass" value={fmtNum(snap.score, 0)} sub={snap.lean ?? ""} />
+                  <Stat label="AI Odds" accent="ion" value={snap.ml_pct == null ? "—" : fmtPct(snap.ml_pct, 0)} sub="beats market next month" />
+                  <Stat label="Confidence" value={fmtNum(snap.confidence_pct, 0)} sub="signals agree" />
+                  <Stat label="Signal" value={<SignalText signal={snap.signal} />} sub="chart pattern" />
                 </div>
                 <div className="mt-3 grid grid-cols-3 gap-3 border-t border-line pt-3 text-xs">
-                  <Mini label="RSI" value={fmtNum(snap.rsi, 0)} />
+                  <Mini label="Price heat (RSI)" value={fmtNum(snap.rsi, 0)} />
                   <Mini label="Volatility" value={fmtPct(snap.volatility_pct, 1)} />
-                  <Mini label="12-1M momentum" value={fmtSignedPct(snap.ret_12_1m_pct, 1)} tone={dirClass(snap.ret_12_1m_pct)} />
+                  <Mini label="12-month momentum" value={fmtSignedPct(snap.ret_12_1m_pct, 1)} tone={dirClass(snap.ret_12_1m_pct)} />
                 </div>
                 {snap.reasons && (
                   <p className="mt-3 border-t border-line pt-3 text-xs leading-relaxed text-mute">
@@ -175,6 +238,15 @@ export default function StockDetailPage() {
 function SignalText({ signal }: { signal: string | null }) {
   const t = signalTone(signal);
   return <span className={t.fg}>{signal ?? "—"}</span>;
+}
+
+function RangeStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="eyebrow leading-none">{label}</div>
+      <div className="mt-0.5 font-mono text-sm tnum text-mute">{value}</div>
+    </div>
+  );
 }
 
 function Mini({ label, value, tone = "text-chalk" }: { label: string; value: string; tone?: string }) {

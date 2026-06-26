@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, IBM_Plex_Mono } from "next/font/google";
+import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/app-shell";
 import { NO_FLASH_SCRIPT } from "@/components/theme";
-
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-});
 
 const inter = Inter({
   variable: "--font-inter",
@@ -34,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${inter.variable} ${plexMono.variable} h-full`}
+      className={`${inter.variable} ${plexMono.variable} h-full`}
     >
       <body className="min-h-full">
         <script dangerouslySetInnerHTML={{ __html: NO_FLASH_SCRIPT }} />

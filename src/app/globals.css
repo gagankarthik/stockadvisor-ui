@@ -9,26 +9,29 @@
 */
 
 @theme {
-  --color-ink: #0c0e10; /* chassis */
-  --color-slate: #15181c; /* panel */
-  --color-slate-2: #1b1f25; /* raised / hover */
-  --color-line: #272d34; /* hairline */
-  --color-line-2: #333b44; /* brighter hairline */
-  --color-chalk: #e7e9ec; /* primary text */
-  --color-mute: #8a929c; /* secondary text */
-  --color-faint: #59616b; /* tertiary / captions */
-  --color-brass: #d8a03d; /* brand needle */
-  --color-brass-2: #f0bd5e;
-  --color-ion: #7c8cf8; /* model accent */
-  --color-ion-2: #9aa6ff;
-  --color-up: #46c28e; /* gains */
-  --color-down: #e5575c; /* losses */
+  /* Bloomberg-terminal palette: flat black chassis, amber accent,
+     cyan/green/red data. Dense, monospaced, no gloss. */
+  --color-ink: #050506; /* chassis (near-black) */
+  --color-slate: #0e0f11; /* panel */
+  --color-slate-2: #181a1d; /* raised / hover */
+  --color-line: #292c30; /* hairline */
+  --color-line-2: #3a3e44; /* brighter hairline */
+  --color-chalk: #ececea; /* primary text */
+  --color-mute: #9a9b92; /* secondary text */
+  --color-faint: #6a6b62; /* tertiary / captions */
+  --color-brass: #ff8a1e; /* the amber — brand + market accent */
+  --color-brass-2: #ffb45c;
+  --color-ion: #36b7ff; /* cyan — the model's read + links */
+  --color-ion-2: #74cdff;
+  --color-up: #18d15e; /* gains */
+  --color-down: #ff4d45; /* losses */
 
-  --font-display: var(--font-fraunces), Georgia, serif;
+  /* Terminal look = monospaced. Headings use mono; Inter only for prose. */
+  --font-display: var(--font-plex-mono), ui-monospace, monospace;
   --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 
-  --radius-panel: 5px;
+  --radius-panel: 3px;
 }
 
 @layer base {
@@ -44,18 +47,17 @@
     color: var(--color-chalk);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    /* faint machined grain so flat panels read as a chassis */
+    /* flat terminal surface with a barely-there scanline */
     background-image:
-      radial-gradient(120% 80% at 50% -10%, rgba(216, 160, 61, 0.035), transparent 60%),
-      repeating-linear-gradient(0deg, transparent 0 3px, rgba(255, 255, 255, 0.008) 3px 4px);
+      repeating-linear-gradient(0deg, transparent 0 3px, rgba(255, 255, 255, 0.006) 3px 4px);
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
     font-weight: 500;
-    letter-spacing: -0.01em;
+    letter-spacing: 0;
   }
   ::selection {
-    background: rgba(216, 160, 61, 0.28);
+    background: rgba(255, 138, 30, 0.3);
     color: #fff;
   }
   /* visible, on-brand keyboard focus everywhere */
@@ -117,10 +119,10 @@
   --color-chalk: #1b1a16;    /* primary text */
   --color-mute: #5b594f;
   --color-faint: #8a8678;
-  --color-brass: #b07f23;    /* darker for contrast on light */
-  --color-brass-2: #946916;
-  --color-ion: #5562d6;
-  --color-ion-2: #404ec2;
+  --color-brass: #c2630a;    /* darker amber for contrast on light */
+  --color-brass-2: #9c4f08;
+  --color-ion: #0a78c2;      /* cyan/blue */
+  --color-ion-2: #0860a0;
   --color-up: #1c9c66;
   --color-down: #cf3f43;
 }

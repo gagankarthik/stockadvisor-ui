@@ -11,12 +11,12 @@ import type { RiskProfile, StockRow } from "@/lib/types";
 type SortKey = "score" | "ml_pct" | "confidence_pct" | "ret_12_1m_pct" | "volatility_pct" | "rsi";
 
 const SORTS: { key: SortKey; label: string }[] = [
-  { key: "score", label: "Score" },
-  { key: "ml_pct", label: "ML %" },
+  { key: "score", label: "Rating" },
+  { key: "ml_pct", label: "AI Odds" },
   { key: "confidence_pct", label: "Confidence" },
   { key: "ret_12_1m_pct", label: "Momentum" },
   { key: "volatility_pct", label: "Volatility" },
-  { key: "rsi", label: "RSI" },
+  { key: "rsi", label: "Price heat (RSI)" },
 ];
 
 const DEFAULTS = { minScore: 0, minMl: 0, minConf: 0, maxVol: 100, signal: "", sector: "" };
@@ -131,8 +131,8 @@ export default function ScreenerPage() {
               <Select value={sector} onChange={setSector} options={[["", "All sectors"], ...sectors.map((s) => [s, s] as [string, string])]} />
             </FilterField>
 
-            <Range label="Min score" value={minScore} min={0} max={100} step={5} onChange={setMinScore} suffix="" />
-            <Range label="Min ML probability" value={minMl} min={0} max={100} step={5} onChange={setMinMl} suffix="%" />
+            <Range label="Min rating" value={minScore} min={0} max={100} step={5} onChange={setMinScore} suffix="" />
+            <Range label="Min AI odds" value={minMl} min={0} max={100} step={5} onChange={setMinMl} suffix="%" />
             <Range label="Min confidence" value={minConf} min={0} max={100} step={5} onChange={setMinConf} suffix="" />
             <Range label="Max volatility" value={maxVol} min={5} max={100} step={5} onChange={setMaxVol} suffix="%" />
           </div>
@@ -152,6 +152,11 @@ export default function ScreenerPage() {
               </button>
             ))}
           </div>
+          <p className="mb-3 text-xs text-faint">
+            <b className="text-mute">Rating</b> 0–100 overall grade · <b className="text-ion">AI Odds</b> model&apos;s
+            chance it beats the market next month · <b className="text-mute">Confidence</b> how strongly our signals
+            agree · <b className="text-mute">Momentum</b> 12-month trend · <b className="text-mute">Heat</b> overbought/oversold.
+          </p>
 
           {error ? (
             <ErrorState message={error.message} onRetry={() => mutate()} />
@@ -168,13 +173,13 @@ export default function ScreenerPage() {
                     <thead>
                       <tr className="border-b border-line text-left">
                         <Th className="pl-4">Stock</Th>
-                        <Th sortKey="score" sort={sort} setSort={setSort} className="w-44">Score</Th>
-                        <Th sortKey="ml_pct" sort={sort} setSort={setSort}>ML %</Th>
-                        <Th sortKey="confidence_pct" sort={sort} setSort={setSort}>Conf.</Th>
+                        <Th sortKey="score" sort={sort} setSort={setSort} className="w-44">Rating</Th>
+                        <Th sortKey="ml_pct" sort={sort} setSort={setSort}>AI Odds</Th>
+                        <Th sortKey="confidence_pct" sort={sort} setSort={setSort}>Confidence</Th>
                         <Th>Signal</Th>
-                        <Th sortKey="ret_12_1m_pct" sort={sort} setSort={setSort}>12-1M</Th>
-                        <Th sortKey="volatility_pct" sort={sort} setSort={setSort}>Vol</Th>
-                        <Th sortKey="rsi" sort={sort} setSort={setSort} className="pr-4">RSI</Th>
+                        <Th sortKey="ret_12_1m_pct" sort={sort} setSort={setSort}>Momentum</Th>
+                        <Th sortKey="volatility_pct" sort={sort} setSort={setSort}>Volatility</Th>
+                        <Th sortKey="rsi" sort={sort} setSort={setSort} className="pr-4">Heat</Th>
                       </tr>
                     </thead>
                     <tbody>
@@ -283,9 +288,9 @@ const StockCard = memo(function StockCard({ r }: { r: StockRow }) {
       </div>
       <div className="mt-2"><ScoreBar value={r.score} /></div>
       <div className="mt-2 grid grid-cols-3 gap-2 text-center">
-        <Mini label="ML %" value={r.ml_pct == null ? "—" : r.ml_pct.toFixed(0)} tone="text-ion" />
-        <Mini label="Conf" value={r.confidence_pct == null ? "—" : r.confidence_pct.toFixed(0)} tone="text-mute" />
-        <Mini label="12-1M" value={fmtSignedPct(r.ret_12_1m_pct, 0)} tone={dirClass(r.ret_12_1m_pct)} />
+        <Mini label="AI Odds" value={r.ml_pct == null ? "—" : r.ml_pct.toFixed(0)} tone="text-ion" />
+        <Mini label="Conf." value={r.confidence_pct == null ? "—" : r.confidence_pct.toFixed(0)} tone="text-mute" />
+        <Mini label="Mom." value={fmtSignedPct(r.ret_12_1m_pct, 0)} tone={dirClass(r.ret_12_1m_pct)} />
       </div>
     </Link>
   );

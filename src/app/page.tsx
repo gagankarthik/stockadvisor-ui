@@ -84,19 +84,19 @@ export default function DashboardPage() {
           {data.model && (
             <Panel className="mt-4">
               <PanelHeader
-                eyebrow="The model"
-                title="Calibrated ML pattern engine"
+                eyebrow="The AI model"
+                title="How good are its picks?"
                 right={
                   <Link href="/model" className="font-mono text-xs text-ion hover:text-ion-2">
-                    inspect →
+                    details →
                   </Link>
                 }
               />
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <Stat label="Test AUC" accent="ion" value={fmtNum(data.model.test_auc, 3)} sub="ranking quality" />
-                <Stat label="Test IC" accent="ion" value={fmtNum(data.model.test_ic, 3)} sub="rank correlation" />
-                <Stat label="Accuracy" value={data.model.test_accuracy != null ? fmtPct(data.model.test_accuracy * 100, 1) : "—"} sub="beats median" />
-                <Stat label="Universe" value={fmtNum(data.model.n_stocks, 0)} sub={`as of ${data.model.data_through ?? "—"}`} />
+                <Stat label="Ranking quality" accent="ion" value={fmtNum(data.model.test_auc, 3)} sub="AUC · 0.5 = coin flip" />
+                <Stat label="Hit rate" value={data.model.test_accuracy != null ? fmtPct(data.model.test_accuracy * 100, 1) : "—"} sub="calls right" />
+                <Stat label="Edge" accent="ion" value={fmtNum(data.model.test_ic, 3)} sub="rank correlation" />
+                <Stat label="Stocks covered" value={fmtNum(data.model.n_stocks, 0)} sub={`as of ${data.model.data_through ?? "—"}`} />
               </div>
             </Panel>
           )}
