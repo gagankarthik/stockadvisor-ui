@@ -1,5 +1,8 @@
 "use client";
 
+// Presentational primitives — the machined surfaces and readouts every page
+// composes. No data, no logic beyond formatting the props they're given.
+
 import { clsx } from "@/lib/clsx";
 
 // ---- Panel: the machined card every section sits in ----
@@ -132,127 +135,7 @@ export function ScoreBar({
   );
 }
 
-// ---- Segmented control ----
-export function Segmented<T extends string>({
-  options,
-  value,
-  onChange,
-  size = "md",
-}: {
-  options: { value: T; label: string }[];
-  value: T;
-  onChange: (v: T) => void;
-  size?: "sm" | "md";
-}) {
-  return (
-    <div className="inline-flex rounded-[var(--radius-panel)] border border-line bg-ink p-0.5">
-      {options.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          onClick={() => onChange(o.value)}
-          aria-pressed={value === o.value}
-          className={clsx(
-            "rounded-[3px] font-mono tracking-wide transition-colors",
-            size === "sm" ? "px-2.5 py-1 text-xs" : "px-3 py-1.5 text-sm",
-            value === o.value
-              ? "bg-slate-2 text-brass shadow-[inset_0_0_0_1px_var(--color-line-2)]"
-              : "text-mute hover:text-chalk",
-          )}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-// ---- Toggle ----
-export function Toggle({
-  checked,
-  onChange,
-  label,
-}: {
-  checked: boolean;
-  onChange: (v: boolean) => void;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      onClick={() => onChange(!checked)}
-      className="group inline-flex items-center gap-2"
-    >
-      <span
-        className={clsx(
-          "relative h-4 w-7 rounded-full border transition-colors",
-          checked ? "border-brass/50 bg-brass/25" : "border-line-2 bg-ink",
-        )}
-      >
-        <span
-          className={clsx(
-            "absolute top-0.5 h-2.5 w-2.5 rounded-full transition-all",
-            checked ? "left-3.5 bg-brass" : "left-0.5 bg-mute",
-          )}
-        />
-      </span>
-      <span className="font-mono text-xs text-mute group-hover:text-chalk">{label}</span>
-    </button>
-  );
-}
-
-// ---- States ----
-export function Skeleton({ className }: { className?: string }) {
-  return (
-    <div
-      className={clsx(
-        "animate-pulse rounded-[var(--radius-panel)] border border-line bg-slate/60",
-        className,
-      )}
-    />
-  );
-}
-
-export function ErrorState({
-  message,
-  onRetry,
-}: {
-  message: string;
-  onRetry?: () => void;
-}) {
-  return (
-    <Panel className="flex flex-col items-start gap-2 border-down/30">
-      <div className="eyebrow text-down">Signal lost</div>
-      <p className="max-w-prose text-sm text-mute">{message}</p>
-      {onRetry && (
-        <button
-          onClick={onRetry}
-          className="mt-1 rounded border border-line-2 px-2.5 py-1 font-mono text-xs text-chalk hover:border-brass hover:text-brass"
-        >
-          Retry
-        </button>
-      )}
-    </Panel>
-  );
-}
-
-export function EmptyState({
-  title,
-  hint,
-}: {
-  title: string;
-  hint?: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col items-center justify-center gap-1.5 rounded-[var(--radius-panel)] border border-dashed border-line-2 px-6 py-12 text-center">
-      <div className="font-display text-lg text-chalk">{title}</div>
-      {hint && <div className="max-w-sm text-sm text-mute">{hint}</div>}
-    </div>
-  );
-}
-
+// ---- Page header: the title block at the top of every page ----
 export function PageHeader({
   kicker,
   title,

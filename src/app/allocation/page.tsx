@@ -6,6 +6,7 @@ import { api, ApiError } from "@/lib/api";
 import { useSWRConfig } from "swr";
 import { PageHeader, Panel, PanelHeader, Stat, Badge, Segmented, Toggle, ErrorState } from "@/components/ui";
 import { fmtMoney, fmtNum, fmtPct, fmtSignedPct, PROFILES } from "@/lib/format";
+import { PROFILE_SEGMENTS } from "@/lib/constants";
 import { clsx } from "@/lib/clsx";
 import type { Allocation, RiskProfile } from "@/lib/types";
 
@@ -99,11 +100,7 @@ export default function AllocationPage() {
                 size="sm"
                 value={profile}
                 onChange={(v) => setProfile(v as RiskProfile)}
-                options={[
-                  { value: "Conservative", label: "Safe" },
-                  { value: "Balanced", label: "Balanced" },
-                  { value: "Aggressive", label: "Growth" },
-                ]}
+                options={PROFILE_SEGMENTS}
               />
             </div>
             <p className="mt-2 text-xs leading-snug text-mute">{profileBlurb}</p>

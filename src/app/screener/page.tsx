@@ -3,8 +3,9 @@
 import { memo, useDeferredValue, useMemo, useState } from "react";
 import Link from "next/link";
 import { useScreener } from "@/lib/hooks";
-import { PageHeader, Panel, Badge, ScoreBar, Segmented, Toggle, Skeleton, ErrorState, EmptyState } from "@/components/ui";
+import { PageHeader, Panel, Badge, ScoreBar, Segmented, Toggle, Select, Range, Skeleton, ErrorState, EmptyState } from "@/components/ui";
 import { dirClass, fmtNum, fmtSignedPct, signalTone } from "@/lib/format";
+import { PROFILE_SEGMENTS } from "@/lib/constants";
 import { clsx } from "@/lib/clsx";
 import type { RiskProfile, StockRow } from "@/lib/types";
 
@@ -102,8 +103,7 @@ export default function ScreenerPage() {
 
           <div className="mt-3 space-y-4">
             <FilterField label="Risk profile">
-              <Segmented size="sm" value={profile} onChange={(v) => setProfile(v as RiskProfile)}
-                options={[{ value: "Conservative", label: "Safe" }, { value: "Balanced", label: "Balanced" }, { value: "Aggressive", label: "Growth" }]} />
+              <Segmented size="sm" value={profile} onChange={(v) => setProfile(v as RiskProfile)} options={PROFILE_SEGMENTS} />
             </FilterField>
 
             <FilterField label="Engines">
@@ -206,31 +206,6 @@ function FilterField({ label, children }: { label: string; children: React.React
     <label className="block">
       <span className="eyebrow">{label}</span>
       <div className="mt-1.5">{children}</div>
-    </label>
-  );
-}
-
-function Select({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: [string, string][] }) {
-  return (
-    <select value={value} onChange={(e) => onChange(e.target.value)}
-      className="h-9 w-full rounded-[var(--radius-panel)] border border-line bg-ink px-2 font-mono text-sm text-chalk outline-none focus:border-brass">
-      {options.map(([v, l]) => <option key={v} value={v} className="bg-slate">{l}</option>)}
-    </select>
-  );
-}
-
-function Range({ label, value, min, max, step, onChange, suffix }: {
-  label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void; suffix: string;
-}) {
-  return (
-    <label className="block">
-      <div className="flex items-center justify-between">
-        <span className="eyebrow">{label}</span>
-        <span className="font-mono text-xs tnum text-chalk">{value}{suffix}</span>
-      </div>
-      <input type="range" min={min} max={max} step={step} value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="mt-1.5 w-full accent-[var(--color-brass)]" />
     </label>
   );
 }
