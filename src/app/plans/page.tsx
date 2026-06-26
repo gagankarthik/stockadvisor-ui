@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSWRConfig } from "swr";
 import { usePlans } from "@/lib/hooks";
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
 import { PageHeader, Panel, Badge, Stat, Skeleton, ErrorState, EmptyState } from "@/components/ui";
 import { fmtMoney, fmtSignedPct } from "@/lib/format";
 import { clsx } from "@/lib/clsx";
@@ -15,8 +15,14 @@ export default function PlansPage() {
   const plans = data?.plans ?? [];
 
   async function remove(index: number) {
-    await api.del(`/plans/${index}`);
-    globalMutate("/plans");
+    if (!window.confirm("Delete this plan? This can't be undone.")) return;
+    try {
+      await api.del(`/plans/${index}`);
+    } catch (e) {
+      window.alert(e instanceof ApiError ? e.message : "Could not delete the plan.");
+    } finally {
+      globalMutate("/plans");
+    }
   }
 
   const totals = plans.reduce(

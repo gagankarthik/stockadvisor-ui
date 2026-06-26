@@ -7,7 +7,7 @@ import { clsx } from "@/lib/clsx";
 import { Providers, useApiBase } from "./providers";
 import { RegimeTape } from "./regime-tape";
 import { useHealth } from "@/lib/hooks";
-import { defaultApiBase } from "@/lib/api";
+import { defaultApiBase, isProxyBase } from "@/lib/api";
 import { ThemeToggle } from "./theme";
 
 const NAV = [
@@ -101,7 +101,7 @@ function ApiSettings() {
         <span className="min-w-0 flex-1">
           <span className="eyebrow block leading-none">Backend</span>
           <span className="block truncate font-mono text-xs text-mute">
-            {apiBase.replace(/^https?:\/\//, "") || "—"}
+            {!apiBase ? "—" : isProxyBase(apiBase) ? "live · via proxy" : apiBase.replace(/^https?:\/\//, "")}
           </span>
         </span>
         <span className="font-mono text-xs text-faint">{health?.version ? `v${health.version}` : ""}</span>
@@ -118,7 +118,8 @@ function ApiSettings() {
             className="w-full rounded border border-line bg-ink px-2.5 py-1.5 font-mono text-xs text-chalk outline-none focus:border-brass"
           />
           <p className="mt-1.5 text-[0.7rem] leading-snug text-faint">
-            Point the UI at your FastAPI host — local, or a Lambda Function URL.
+            Leave blank to use the built-in proxy (no CORS). Or enter a backend
+            URL to hit it directly — that host must allow CORS.
           </p>
           <div className="mt-2.5 flex justify-end gap-2">
             <button

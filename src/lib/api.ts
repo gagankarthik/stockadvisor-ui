@@ -1,11 +1,21 @@
 // Typed client for the MarketDesk API.
 //
 // Base URL resolution order: localStorage override (set in the UI) →
-// NEXT_PUBLIC_API_BASE_URL → http://localhost:8000. Resolving at call time
-// (not import time) lets the user re-point the UI at a Lambda URL live.
+// NEXT_PUBLIC_API_BASE_URL → the built-in same-origin proxy ("/backend").
+// Resolving at call time (not import time) lets the user re-point the UI live.
+//
+// The default "/backend" base is a relative path served by this app's Next.js
+// rewrite (see next.config.ts), which proxies to the real API server-side and
+// avoids browser CORS. Set NEXT_PUBLIC_API_BASE_URL to an absolute URL only if
+// you want the browser to hit a backend directly (that backend must allow CORS).
 
-const DEFAULT_BASE = "http://localhost:8000";
+const DEFAULT_BASE = "/backend";
 const LS_KEY = "marketdesk.apiBase";
+
+// True when the base is the same-origin proxy rather than a direct API URL.
+export function isProxyBase(base: string): boolean {
+  return base.startsWith("/");
+}
 
 export function defaultApiBase(): string {
   return process.env.NEXT_PUBLIC_API_BASE_URL || DEFAULT_BASE;
