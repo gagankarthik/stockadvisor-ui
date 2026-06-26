@@ -1,26 +1,149 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  MarketDesk — "The Desk" instrument theme.
+  Semantic color system (the opinionated core):
+    brass = the market / brand needle
+    ion   = the ML model's opinion
+    up/down = price direction ONLY (reserved, so they read instantly)
+*/
+
+@theme {
+  --color-ink: #0c0e10; /* chassis */
+  --color-slate: #15181c; /* panel */
+  --color-slate-2: #1b1f25; /* raised / hover */
+  --color-line: #272d34; /* hairline */
+  --color-line-2: #333b44; /* brighter hairline */
+  --color-chalk: #e7e9ec; /* primary text */
+  --color-mute: #8a929c; /* secondary text */
+  --color-faint: #59616b; /* tertiary / captions */
+  --color-brass: #d8a03d; /* brand needle */
+  --color-brass-2: #f0bd5e;
+  --color-ion: #7c8cf8; /* model accent */
+  --color-ion-2: #9aa6ff;
+  --color-up: #46c28e; /* gains */
+  --color-down: #e5575c; /* losses */
+
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --radius-panel: 5px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+  html {
+    background: var(--color-ink);
+    color-scheme: dark;
+  }
+  body {
+    background: var(--color-ink);
+    color: var(--color-chalk);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    /* faint machined grain so flat panels read as a chassis */
+    background-image:
+      radial-gradient(120% 80% at 50% -10%, rgba(216, 160, 61, 0.035), transparent 60%),
+      repeating-linear-gradient(0deg, transparent 0 3px, rgba(255, 255, 255, 0.008) 3px 4px);
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  ::selection {
+    background: rgba(216, 160, 61, 0.28);
+    color: #fff;
+  }
+  /* visible, on-brand keyboard focus everywhere */
+  :focus-visible {
+    outline: 2px solid var(--color-brass);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2b323a;
+    border-radius: 6px;
+    border: 2px solid var(--color-ink);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3a434d;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* the eyebrow label used across every panel header */
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-faint);
+  }
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+  /* the instrument scanline used on the Regime Tape */
+  .scan::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(255, 255, 255, 0.012) 2px 3px
+    );
+  }
+}
+
+/* ---- Light theme: override the semantic tokens; utilities follow the vars ---- */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-ink: #f6f4ef;      /* warm paper chassis */
+  --color-slate: #ffffff;    /* panel */
+  --color-slate-2: #f0ece3;  /* raised / hover */
+  --color-line: #e4dfd4;     /* hairline */
+  --color-line-2: #d2ccbd;
+  --color-chalk: #1b1a16;    /* primary text */
+  --color-mute: #5b594f;
+  --color-faint: #8a8678;
+  --color-brass: #b07f23;    /* darker for contrast on light */
+  --color-brass-2: #946916;
+  --color-ion: #5562d6;
+  --color-ion-2: #404ec2;
+  --color-up: #1c9c66;
+  --color-down: #cf3f43;
+}
+
+:root[data-theme="light"] body {
+  background-image:
+    radial-gradient(120% 80% at 50% -10%, rgba(176, 127, 35, 0.05), transparent 60%);
+}
+:root[data-theme="light"] .scan::after {
+  background: repeating-linear-gradient(0deg, transparent 0 2px, rgba(0, 0, 0, 0.018) 2px 3px);
+}
+:root[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #cfc8b9;
+}
+
+/* honor reduced-motion: kill ambient + transition motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
