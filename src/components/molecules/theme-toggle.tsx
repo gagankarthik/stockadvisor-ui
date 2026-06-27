@@ -1,5 +1,8 @@
 "use client";
 
+// Molecule · ThemeToggle — dark/light switch backed by localStorage, plus the
+// no-flash inline script the document injects before paint.
+
 import { useEffect, useState } from "react";
 import { clsx } from "@/lib/clsx";
 

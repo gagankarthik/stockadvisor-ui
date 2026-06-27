@@ -1,4 +1,4 @@
-// Nav icon set — pure SVG, no state. Keyed by name so the nav config stays
+// Atom · Icon — the nav glyph set. Pure SVG, keyed by name so consumers stay
 // declarative.
 
 const STROKE = {

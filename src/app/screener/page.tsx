@@ -3,7 +3,7 @@
 import { memo, useDeferredValue, useMemo, useState } from "react";
 import Link from "next/link";
 import { useScreener } from "@/lib/hooks";
-import { PageHeader, Panel, Badge, ScoreBar, Segmented, Toggle, Select, Range, Skeleton, ErrorState, EmptyState } from "@/components/ui";
+import { PageHeader, Panel, Badge, ScoreBar, Segmented, Toggle, Select, Range, FilterField, Skeleton, ErrorState, EmptyState } from "@/components/ui";
 import { dirClass, fmtNum, fmtSignedPct, signalTone } from "@/lib/format";
 import { PROFILE_SEGMENTS } from "@/lib/constants";
 import { clsx } from "@/lib/clsx";
@@ -198,15 +198,6 @@ export default function ScreenerPage() {
         </div>
       </div>
     </>
-  );
-}
-
-function FilterField({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="block">
-      <span className="eyebrow">{label}</span>
-      <div className="mt-1.5">{children}</div>
-    </label>
   );
 }
 

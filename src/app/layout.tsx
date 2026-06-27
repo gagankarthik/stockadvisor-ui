@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import { AppShell } from "@/components/shell";
-import { NO_FLASH_SCRIPT } from "@/components/theme";
+import { AppShell } from "@/components/templates";
+import { NO_FLASH_SCRIPT } from "@/components/molecules";
 
 const inter = Inter({
   variable: "--font-inter",

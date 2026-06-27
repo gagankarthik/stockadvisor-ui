@@ -1,6 +1,6 @@
 "use client";
 
-// Interactive price area chart (SVG + hover crosshair/tooltip).
+// Organism · PriceChart — interactive area chart (SVG + hover crosshair/tooltip).
 
 import { useRef, useState } from "react";
 import type { PriceBar } from "@/lib/types";

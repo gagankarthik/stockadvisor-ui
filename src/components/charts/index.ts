@@ -1,7 +1,4 @@
-// Barrel for the charts module. Import any chart from `@/components/charts`.
+// Public entry for the data-viz charts. Internally these are organisms; this
+// barrel keeps the stable `@/components/charts` import path.
 
-export { ArcGauge, BreadthMeter } from "./gauges";
-export { PriceChart } from "./price-chart";
-export { TradingChart } from "./trading-chart";
-export { SectorBars } from "./sector-bars";
-export { Sparkline } from "./sparkline";
+export * from "@/components/organisms/charts";

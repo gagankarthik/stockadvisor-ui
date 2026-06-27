@@ -1,14 +1,13 @@
 "use client";
 
-// App shell: the persistent chrome (left rail, mobile bar, regime tape) that
-// wraps every page. Pure layout — it composes nav, status, and theme controls.
+// Template · AppShell — the persistent chrome (left rail, mobile bar, regime
+// tape) that wraps every page. Pure layout: it composes nav, status, and theme
+// organisms into responsive zones and renders page content as children.
 
 import { usePathname } from "next/navigation";
 import { Providers } from "@/components/providers";
-import { RegimeTape } from "@/components/regime-tape";
-import { ThemeToggle } from "@/components/theme";
-import { Wordmark, NavItems } from "./nav";
-import { ApiSettings } from "./api-settings";
+import { ThemeToggle } from "@/components/molecules";
+import { RegimeTape, ApiSettings, Wordmark, NavItems } from "@/components/organisms";
 
 function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

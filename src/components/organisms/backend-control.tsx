@@ -1,7 +1,7 @@
 "use client";
 
-// The "Backend" control in the sidebar: shows live connection/snapshot status
-// and lets the user re-point the UI at another backend (overrides the proxy).
+// Organism · Backend control — the sidebar "Backend" popover: live connection /
+// snapshot status, plus an override to re-point the UI at another backend.
 
 import { useState } from "react";
 import { clsx } from "@/lib/clsx";

@@ -1,11 +1,11 @@
 "use client";
 
-// Primary navigation: the route config, the wordmark, and the nav-item list
+// Organism · App navigation — the route config, wordmark, and nav-item list
 // shared between the desktop rail and the mobile bar.
 
 import Link from "next/link";
 import { clsx } from "@/lib/clsx";
-import { Icon } from "./icon";
+import { Icon } from "@/components/atoms";
 
 export const NAV = [
   { href: "/", label: "Dashboard", icon: "gauge" },

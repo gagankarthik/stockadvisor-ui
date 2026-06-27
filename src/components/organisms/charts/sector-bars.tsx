@@ -1,6 +1,6 @@
 "use client";
 
-// Sector bars: diverging 1-month performance, centered on zero.
+// Organism · SectorBars — diverging 1-month performance, centered on zero.
 
 import { clsx } from "@/lib/clsx";
 

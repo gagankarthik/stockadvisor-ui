@@ -1,6 +1,6 @@
 "use client";
 
-// Tiny inline trend line for compact rows.
+// Organism · Sparkline — a tiny inline trend line for compact rows.
 
 export function Sparkline({ values, up }: { values: number[]; up: boolean }) {
   if (values.length < 2) return null;

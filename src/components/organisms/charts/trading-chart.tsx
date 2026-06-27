@@ -1,6 +1,6 @@
 "use client";
 
-// Trading chart: candles or area + volume, with an OHLC crosshair tooltip.
+// Organism · TradingChart — candles or area + volume, with an OHLC crosshair.
 
 import { useRef, useState } from "react";
 import type { PriceBar } from "@/lib/types";

@@ -1,5 +1,8 @@
 "use client";
 
+// Organism · RegimeTape — the always-on market status strip: regime, breadth,
+// the ETF ticker, VIX gauge, and connection state.
+
 import { useDashboard, useHealth } from "@/lib/hooks";
 import { clsx } from "@/lib/clsx";
 import { ArcGauge } from "./charts";
