@@ -1,20 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useDashboard } from "@/lib/hooks";
+import { useDashboard, useMarketBrief } from "@/lib/hooks";
 import { Panel, PanelHeader, Stat, Badge, PageHeader, Skeleton, ErrorState } from "@/components/ui";
 import { BreadthMeter, SectorBars } from "@/components/charts";
+import { DeskNoteCard } from "@/components/organisms";
 import { dirClass, fmtNum, fmtPct, fmtSignedPct } from "@/lib/format";
 import { clsx } from "@/lib/clsx";
 import type { MoverRow } from "@/lib/types";
 
 export default function DashboardPage() {
   const { data, error, isLoading, mutate } = useDashboard();
+  const { data: brief, error: briefError, isLoading: briefLoading } = useMarketBrief();
 
   if (error) return <Wrap><ErrorState message={error.message} onRetry={() => mutate()} /></Wrap>;
 
   return (
     <Wrap>
+      <div className="mb-4">
+        <DeskNoteCard note={brief} isLoading={briefLoading} error={briefError} />
+      </div>
       {isLoading || !data ? (
         <DashboardSkeleton />
       ) : (

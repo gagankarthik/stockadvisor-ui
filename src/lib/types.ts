@@ -190,3 +190,14 @@ export interface PlanRow {
 }
 
 export type RiskProfile = "Conservative" | "Balanced" | "Aggressive";
+
+export interface DeskNote {
+  headline: string;
+  summary: string;
+  risks: string;
+  source: "openai" | "fallback";
+  model: string | null;
+  generated_at: string;
+  disclaimer: string;
+  cached?: boolean;
+}

@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { screenerQuery } from "./api";
 import type {
   Dashboard,
+  DeskNote,
   Health,
   ModelCard,
   ModelHistoryEntry,
@@ -39,4 +40,13 @@ export function useModelHistory() {
 
 export function usePlans() {
   return useSWR<{ plans: PlanRow[] }>("/plans");
+}
+
+// AI "Desk Note" narrative. Supplementary, so don't hammer the API: no polling.
+export function useMarketBrief() {
+  return useSWR<DeskNote>("/insight/market");
+}
+
+export function useStockInsight(ticker: string | null) {
+  return useSWR<DeskNote>(ticker ? `/insight/stock/${ticker}` : null);
 }

@@ -5,6 +5,8 @@ import { useMemo, useState } from "react";
 import useSWR from "swr";
 import { PageHeader, Panel, PanelHeader, Stat, Badge, Skeleton, ErrorState } from "@/components/ui";
 import { TradingChart } from "@/components/charts";
+import { DeskNoteCard } from "@/components/organisms";
+import { useStockInsight } from "@/lib/hooks";
 import { dirClass, fmtMoney, fmtNum, fmtPct, fmtSignedPct, signalTone } from "@/lib/format";
 import { clsx } from "@/lib/clsx";
 import type { StockDetail } from "@/lib/types";
@@ -38,6 +40,7 @@ export default function StockDetailPage() {
     ticker ? `/stocks/${ticker}?period=${range.period}&interval=${range.interval}` : null,
     { refreshInterval: 60000 }, // live: refresh quote + chart each minute
   );
+  const { data: thesis, error: thesisError, isLoading: thesisLoading } = useStockInsight(ticker || null);
 
   const snap = data?.snapshot;
   const quote = data?.quote;
@@ -163,6 +166,9 @@ export default function StockDetailPage() {
               </div>
             )}
           </Panel>
+
+          {/* AI thesis */}
+          <DeskNoteCard eyebrow="AI thesis" note={thesis} isLoading={thesisLoading} error={thesisError} />
 
           {/* Model read + analysts */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
